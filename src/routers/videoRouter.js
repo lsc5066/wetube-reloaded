@@ -1,12 +1,17 @@
 import express from "express";
-import { see, edit, upload, deleteVideo } from "../controllers/videoController"
+import {
+    watch, 
+    getEdit, 
+    postEdit,
+    getUpload,
+    postUpload,
+} from "../controllers/videoController";
 
 const videoRouter = express.Router();
 
 // /:@가 있어야 변수
-videoRouter.get("/upload", upload);
-videoRouter.get("/:id(\\d+)", see);
-videoRouter.get("/:id(\\d+)/edit", edit);
-videoRouter.get("/:id(\\d+)/delete", deleteVideo);
+videoRouter.get("/:id(\\d+)", watch);
+videoRouter.route("/:id(\\d+)/edit").get(getEdit).post(postEdit);
+videoRouter.route("/upload").get(getUpload).post(postUpload);
 
 export default videoRouter;
