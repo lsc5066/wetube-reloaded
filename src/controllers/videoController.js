@@ -8,7 +8,7 @@ export const home = async(req, res) => {
 export const watch = async(req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id);
-  if(!video) {
+  if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
   return res.render("watch", { pageTitle: video.title, video });
@@ -17,7 +17,7 @@ export const watch = async(req, res) => {
 export const getEdit = async(req, res) => {
   const { id } = req.params;
   const video = await Video.findById(id);
-  if(!video) {
+  if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
   return res.render("edit", { pageTitle: `Edit: ${video.title}` , video });
@@ -27,7 +27,7 @@ export const postEdit = async(req, res) => {
   const { id } = req.params;
   const { title, description, hashtags } = req.body;
   const video = await Video.exists({ _id: id });
-  if(!video) {
+  if (!video) {
     return res.render("404", { pageTitle: "Video not found." });
   }
   await Video.findByIdAndUpdate(id, {
@@ -65,11 +65,15 @@ export const deleteVideo = async(req, res) => {
   return res.redirect("/");
 };
 
-export const search = (req, res) => {
+export const search = async(req, res) => {
   const { keyword } = req.query;
-  if(keyword) {
-    // search 
+  let videos = [];
+  if (keyword) {
+    videos = await Video.find({
+      title: {
+        $regex: new RegExp(`${keyword}$`, "i"),
+      },
+    });
   }
-  console.log("should search for", keyword);
-  return res.render("search", { pageTitle:"Search" });
+  return res.render("search", { pageTitle:"Search", videos });
 };
