@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   req.sessionStore.all((error, sessions) => {
     console.log(sessions);
     next();
-  })
+  });
 });
 
 app.get("/add-one", (req, res, next) => {
