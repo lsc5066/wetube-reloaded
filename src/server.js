@@ -1,5 +1,6 @@
 import express, { urlencoded } from "express";
 import morgan from "morgan";
+import session from "express-session";
 import rootRouter from "./routers/rootRouter";
 import userRouter from "./routers/userRouter";
 import videoRouter from "./routers/videoRouter";
@@ -12,6 +13,22 @@ app.set("views", process.cwd() + "/src/views");
 // app.use() make global middleware
 app.use(logger);
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  session({
+    secret: "Hello!",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+app.use((req, res, next) => {
+  req.sessionStore.all((error, sessions) => {
+    console.log(sessions);
+    next();
+  })
+});
+
 app.use("/", rootRouter);
 app.use("/videos", videoRouter);
 app.use("/users", userRouter);
