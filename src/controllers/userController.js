@@ -1,5 +1,4 @@
-import User from "../models/Users";
-import Video from "../models/Video";
+import User from "../models/User";
 import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 
@@ -7,15 +6,15 @@ export const getJoin = (req, res) => res.render("join", { pageTitle: "Join" });
 export const postJoin = async (req, res) => {
   const { name, username, email, password, password2, location } = req.body;
   const pageTitle = "Join";
-  if(password !== password2) {
-    return res.status(400).render("join", { 
+  if (password !== password2) {
+    return res.status(400).render("join", {
       pageTitle,
       errorMessage: "Password confirmation does not match.",
     });
   }
   const exists = await User.exists({ $or: [{ username }, { email }] });
-  if(exists) {
-    return res.status(400).render("join", { 
+  if (exists) {
+    return res.status(400).render("join", {
       pageTitle,
       errorMessage: "This username/email is already taken.",
     });
@@ -31,7 +30,7 @@ export const postJoin = async (req, res) => {
     return res.redirect("/login");
   } catch (error) {
     return res.status(400).render("join", {
-      pageTitle: "Join",
+      pageTitle: "Upload Video",
       errorMessage: error._message,
     });
   }
@@ -56,7 +55,6 @@ export const postLogin = async (req, res) => {
       errorMessage: "Wrong password",
     });
   }
-  // Each browser have diffrent sessions.
   req.session.loggedIn = true;
   req.session.user = user;
   return res.redirect("/");
@@ -112,6 +110,7 @@ export const finishGithubLogin = async (req, res) => {
       (email) => email.primary === true && email.verified === true
     );
     if (!emailObj) {
+      // set notification
       return res.redirect("/login");
     }
     let user = await User.findOne({ email: emailObj.email });
@@ -170,7 +169,6 @@ export const getChangePassword = (req, res) => {
   }
   return res.render("users/change-password", { pageTitle: "Change Password" });
 };
-
 export const postChangePassword = async (req, res) => {
   const {
     session: {
@@ -199,8 +197,13 @@ export const postChangePassword = async (req, res) => {
 
 export const see = async (req, res) => {
   const { id } = req.params;
-  const user = await User.findById(id).populate("videos");
-  console.log(user)
+  const user = await User.findById(id).populate({
+    path: "videos",
+    populate: {
+      path: "owner",
+      model: "User",
+    },
+  });
   if (!user) {
     return res.status(404).render("404", { pageTitle: "User not found." });
   }
