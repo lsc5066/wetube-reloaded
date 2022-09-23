@@ -62,7 +62,7 @@ header {
   align-items: center;
 }
 header .header__logo {
-  color: white;
+  color: red;
   font-size: 38px;
 }
 header ul {
