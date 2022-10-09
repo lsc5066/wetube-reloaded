@@ -362,6 +362,11 @@ form label {
   margin-bottom: 10px;
 }
 
+#delete__comment:hover {
+  background-color: gray;
+  cursor: pointer;
+}
+
 a {
   color: inherit;
   text-decoration: none;
